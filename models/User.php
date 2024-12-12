@@ -61,31 +61,25 @@ class User
         // var_dump($_POST);
         // exit;
 
-        // Validasi data
         if (empty($_POST['name']) || empty($_POST['username']) || empty($_POST['password'])) {
             throw new Exception("All fields are required");
         }
 
-        // Bind data ke properti class
         $this->name = $_POST['name'];
         $this->username = $_POST['username'];
         $this->password = $_POST['password'];
 
-        // Query dengan prepared statements
         $query = "INSERT INTO users (name, username, password, role_id) VALUES (:name, :username, :password, :role_id)";
         $stmt = $pdo->prepare($query);
 
-        // Hash password dan bind parameter
         $hashedPassword = password_hash($this->password, PASSWORD_BCRYPT);
         $stmt->bindParam(':name', $this->name);
         $stmt->bindParam(':username', $this->username);
         $stmt->bindParam(':password', $hashedPassword);
         $stmt->bindValue(':role_id', 2, PDO::PARAM_INT);
 
-        // Eksekusi query
         $stmt->execute();
 
-        // Sukses
         $_SESSION['success'] = "Register success";
         header('Location: /register');
         exit;
